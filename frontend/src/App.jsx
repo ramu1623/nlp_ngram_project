@@ -7,13 +7,21 @@ function App() {
   const [type, setType] = useState("");
 
   const generateNgrams = async (ngramType) => {
-    setType(ngramType);
+    if (!text.trim()) {
+      alert("Please enter a sentence");
+      return;
+    }
 
-    const res = await fetch("https://nlp-ngram-project.onrender.com/ngrams", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text })
-    });
+    setType(ngramType);
+    //https://nlp-ngram-projectf.onrender.com
+    const res = await fetch(
+      "http://127.0.0.1:5000/ngrams",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      }
+    );
 
     const data = await res.json();
     setResult(data);
@@ -58,24 +66,37 @@ function App() {
           </button>
         </div>
 
-        {result && type === "unigram" && (
+        {/* OUTPUT SECTION */}
+        {result && (
           <div className="output">
-            <h3>Unigrams</h3>
-            <p>{result.unigrams.join(", ")}</p>
-          </div>
-        )}
+            {type === "unigram" && (
+              <>
+                <h3>Unigrams</h3>
+                <p>{result.unigrams.join(", ")}</p>
+              </>
+            )}
 
-        {result && type === "bigram" && (
-          <div className="output">
-            <h3>Bigrams</h3>
-            <p>{result.bigrams.join(", ")}</p>
-          </div>
-        )}
+            {type === "bigram" && (
+              <>
+                <h3>Bigrams</h3>
+                <p>{result.bigrams.join(", ")}</p>
+              </>
+            )}
 
-        {result && type === "trigram" && (
-          <div className="output">
-            <h3>Trigrams</h3>
-            <p>{result.trigrams.join(", ")}</p>
+            {type === "trigram" && (
+              <>
+                <h3>Trigrams</h3>
+                <p>{result.trigrams.join(", ")}</p>
+              </>
+            )}
+
+            {/* MODEL EVALUATION */}
+            <hr />
+            <h3>Model Evaluation</h3>
+            <p>
+              <strong>Perplexity:</strong>{" "}
+              {result.perplexity}
+            </p>
           </div>
         )}
       </div>
