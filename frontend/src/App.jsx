@@ -13,9 +13,9 @@ function App() {
     }
 
     setType(ngramType);
-    //https://nlp-ngram-projectf.onrender.com
+    //http://127.0.0.1:5000/ngrams
     const res = await fetch(
-      "http://127.0.0.1:5000/ngrams",
+      "https://nlp-ngram-project-1.onrender.com",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
