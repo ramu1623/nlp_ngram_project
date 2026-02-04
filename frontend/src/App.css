@@ -119,6 +119,9 @@ body {
   font-size: 0.9rem;
   position: relative;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .btn::after {
