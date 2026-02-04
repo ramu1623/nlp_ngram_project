@@ -13,7 +13,7 @@ function App() {
     }
 
     setType(ngramType);
-    //http://127.0.0.1:5000/ngrams
+    //https://nlp-ngram-project-1.onrender.com http://127.0.0.1:5000/ngrams
     const res = await fetch(
       "https://nlp-ngram-project-1.onrender.com",
       {
