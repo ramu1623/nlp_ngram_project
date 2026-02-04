@@ -5,13 +5,15 @@ import math
 import os
 
 app = Flask(__name__)
-CORS(app)
 
-# -------- N-gram generator --------
+# ✅ Explicit CORS configuration (IMPORTANT for Render)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+# ------------------ N-gram Generator ------------------
 def generate_ngrams(words, n):
-    return [tuple(words[i:i+n]) for i in range(len(words) - n + 1)]
+    return [tuple(words[i:i + n]) for i in range(len(words) - n + 1)]
 
-# -------- Train Bigram Language Model --------
+# ------------------ Train Bigram Language Model ------------------
 def train_bigram_model(words):
     unigrams = Counter(words)
     bigrams = Counter(generate_ngrams(words, 2))
@@ -22,9 +24,9 @@ def train_bigram_model(words):
 
     return unigrams, bigrams, bigram_prob
 
-# -------- Perplexity Calculation --------
+# ------------------ Perplexity Calculation ------------------
 def calculate_perplexity(words, bigram_prob):
-    # Perplexity not defined for < 2 words
+    # Perplexity undefined for less than 2 words
     if len(words) < 2:
         return None
 
@@ -34,7 +36,7 @@ def calculate_perplexity(words, bigram_prob):
     for i in range(1, len(words)):
         pair = (words[i - 1], words[i])
 
-        # Unseen bigram
+        # Unseen bigram → infinite perplexity
         if pair not in bigram_prob:
             return float("inf")
 
@@ -42,7 +44,7 @@ def calculate_perplexity(words, bigram_prob):
 
     return math.exp(-log_prob_sum / N)
 
-# -------- API Route --------
+# ------------------ API Route ------------------
 @app.route("/ngrams", methods=["POST"])
 def ngrams():
     data = request.json
@@ -57,7 +59,7 @@ def ngrams():
     # Train model
     _, _, bigram_prob = train_bigram_model(words)
 
-    # Calculate perplexity safely
+    # Calculate perplexity
     perplexity_raw = calculate_perplexity(words, bigram_prob)
 
     if perplexity_raw is None:
@@ -78,7 +80,12 @@ def ngrams():
         "perplexity": perplexity
     })
 
-# -------- Render / Local Run --------
+# ------------------ Health Check Route (Optional but Recommended) ------------------
+@app.route("/", methods=["GET"])
+def home():
+    return "N-Gram Language Model API is running"
+
+# ------------------ Run App (Local + Render) ------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
